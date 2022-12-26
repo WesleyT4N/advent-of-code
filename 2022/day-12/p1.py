@@ -29,27 +29,16 @@ class HillClimb:
 
     def fewest_steps_to_end(self):
         queue = deque([self.start])
-        visited = set()
+        visited = set([self.start])
         parent_of_coord = {self.start: None}
         while queue:
             current_coord = queue.popleft()
-            visited.add(current_coord)
-            print(current_coord)
             if current_coord == self.end:
                 return self._calc_step_count(parent_of_coord)
-            for neighb in self.get_neighbors(current_coord):
-                if neighb not in visited:
-                    parent_of_coord[neighb] = current_coord
-                    visited.add(neighb)
-                    queue.append(neighb)
-
-    def _calc_step_count(self, parent_of_coord):
-        curr = self.end
-        step_count = 0
-        while curr != self.start:
-            curr = parent_of_coord[curr]
-            step_count += 1
-        return step_count
+            for neighb in self.get_neighbors(current_coord, visited):
+                parent_of_coord[neighb] = current_coord
+                visited.add(neighb)
+                queue.append(neighb)
 
     def get_elevation(self, coord):
         x, y = coord
@@ -59,7 +48,7 @@ class HillClimb:
             return 0
         return 25
 
-    def get_neighbors(self, coord):
+    def get_neighbors(self, coord, visited):
         num_rows = len(self.map)
         num_cols = len(self.map[0])
         x, y = coord
@@ -68,17 +57,29 @@ class HillClimb:
         for i in [x - 1, x, x + 1]:
             for j in [y - 1, y, y + 1]:
                 # within bounds of the map
+                neighb = (i, j)
+                dist = abs(x - i) + abs(y - j)
                 if (
-                    (i, j) != (x, y)
+                    dist == 1
                     and 0 <= i < num_rows
                     and 0 <= j < num_cols
-                    and abs(curr_elevation - self.get_elevation((i, j))) <= 1
+                    and self.get_elevation(neighb) - curr_elevation <= 1
+                    and neighb not in visited
                 ):
-                    neighbors.append((i, j))
+                    neighbors.append(neighb)
         return neighbors
 
+    def _calc_step_count(self, parent_of_coord):
+        curr = self.end
+        step_count = 0
+        path = []
+        while curr != self.start:
+            path.append(curr)
+            curr = parent_of_coord[curr]
+            step_count += 1
+        path.append(self.start)
+        return step_count
 
-hc = HillClimb("./test-input")
-print(hc.map)
-print(hc.start)
+
+hc = HillClimb("./input")
 print(hc.fewest_steps_to_end())
