@@ -28,14 +28,15 @@ class HillClimb:
                 res.append(ord(c) - 97)
         return res
 
-    def fewest_steps_to_end(self, start):
-        queue = deque([start])
-        visited = set([start])
-        parent_of_coord = {start: None}
+    def fewest_steps_to_end(self):
+        # reverse bfs from end to first start coord found
+        queue = deque([self.end])
+        visited = set([self.end])
+        parent_of_coord = {self.end: None}
         while queue:
             current_coord = queue.popleft()
-            if current_coord == self.end:
-                return self._calc_step_count(parent_of_coord, start)
+            if current_coord in self.start_coords:
+                return self._calc_step_count(parent_of_coord, current_coord)
             for neighb in self.get_neighbors(current_coord, visited):
                 parent_of_coord[neighb] = current_coord
                 visited.add(neighb)
@@ -60,30 +61,20 @@ class HillClimb:
                     dist == 1
                     and 0 <= i < num_rows
                     and 0 <= j < num_cols
-                    and self.get_elevation(neighb) - curr_elevation <= 1
+                    and curr_elevation - self.get_elevation(neighb) <= 1
                     and neighb not in visited
                 ):
                     neighbors.append(neighb)
         return neighbors
 
     def _calc_step_count(self, parent_of_coord, start):
-        curr = self.end
+        curr = start
         step_count = 0
-        while curr != start:
+        while curr != self.end:
             curr = parent_of_coord[curr]
             step_count += 1
         return step_count
 
-    def fewest_steps_to_end_from_possible_starts(self):
-        steps_to_end = {}
-        for coord in self.start_coords:
-            steps_to_end[coord] = self.fewest_steps_to_end(coord)
-        return min(
-            v
-            for k, v in steps_to_end.items()
-            if k in self.start_coords and v is not None
-        )
-
 
 hc = HillClimb("./input")
-print(hc.fewest_steps_to_end_from_possible_starts())
+print(hc.fewest_steps_to_end())
