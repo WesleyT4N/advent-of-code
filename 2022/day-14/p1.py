@@ -1,7 +1,7 @@
 SAND_SOURCE = (500, 0)
 
 Coord = tuple[int, int]
-Cave = set(Coord)  # cave represented as a tuple of coords
+Cave = set(Coord)  # cave represented as a set of coords
 
 
 class SandSimulation:
