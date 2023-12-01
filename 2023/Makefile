@@ -5,6 +5,4 @@ new:
 	count=$$(($$count + 1)); \
 	printf -v folder "%02d" $$count; \
 	mkdir -p $$folder; \
-	cp templates/starter.go $$folder/p1.go; \
-	cp templates/starter.go $$folder/p2.go; \
-	touch $$folder/input.txt;
+	cp -r templates/* $$folder; \
