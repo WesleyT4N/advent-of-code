@@ -5,4 +5,5 @@ new:
 	count=$$(($$count + 1)); \
 	printf -v folder "%02d" $$count; \
 	mkdir -p $$folder; \
+	echo "Created folder $$folder"; \
 	cp -r templates/* $$folder; \
